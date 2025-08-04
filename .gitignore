@@ -1,0 +1,5 @@
+# BUILD
+build/
+
+# MISCELLANEOUS
+.DS_Store
