@@ -8,8 +8,13 @@
 #include "paddle.h"
 #include "playerscore.h"
 
-const int WINDOW_WIDTH = 1280;
-const int WINDOW_HEIGHT = 720;
+enum Buttons 
+{
+	PaddleOneUp = 0,
+	PaddleOneDown,
+	PaddleTwoUp,
+	PaddleTwoDown,
+};
 
 int main()
 {
@@ -24,12 +29,14 @@ int main()
 			Vec2((WINDOW_WIDTH / 2.0f) - (BALL_WIDTH / 2.0f),
 				(WINDOW_HEIGHT / 2.0f) - (BALL_WIDTH / 2.0f)));
 
+	// Create the paddles
 	Paddle paddleOne(
-		Vec2(50.0f, (WINDOW_HEIGHT / 2.0f) - (PADDLE_HEIGHT / 2.0f)));
+		Vec2(50.0f, WINDOW_HEIGHT / 2.0f),
+		Vec2(0.0f, 0.0f));
 
 	Paddle paddleTwo(
-		Vec2(WINDOW_WIDTH - 50.0f, (WINDOW_HEIGHT / 2.0f) - (PADDLE_HEIGHT / 2.0f)));
-
+		Vec2(WINDOW_WIDTH - 50.0f, WINDOW_HEIGHT / 2.0f),
+		Vec2(0.0f, 0.0f));
 
 	// If you don't see anything written on screen is because of the program is not finding the font!
 	TTF_Font* scoreFont = TTF_OpenFont("/Users/utente/Desktop/coding/Pong/build/dejavu-fonts-ttf-2.37/ttf/DejaVuSans.ttf", 40);
@@ -41,54 +48,135 @@ int main()
 	PlayerScore playerOneScoreText(Vec2(WINDOW_WIDTH / 4, 20), renderer, scoreFont);
 	PlayerScore playerTwoScoreText(Vec2(3 * WINDOW_WIDTH / 4, 20), renderer, scoreFont);
 
-	// Game Logic
-	{
-		bool running = true;
+	// Replace your game logic section with this fixed version:
 
-		while(running)
-		{
-			SDL_Event event;
-			while (SDL_PollEvent(&event))
-			{
-				if(event.type == SDL_QUIT)
-				{
-					running = false;	
-				} 
-				else if (event.type == SDL_KEYDOWN)
-				{
-					if (event.key.keysym.sym == SDLK_ESCAPE)
-					{
-						running = false;
-					}
-				}
-			}
-			// Make the whole window black
-			SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, 0xFF);
-			SDL_RenderClear(renderer);
-		
-			// Rendering zone
-			// The main stage
-			SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF) ;
-			
-			for (int y = 0; y < WINDOW_HEIGHT; ++y)
-			{
-				if (y % 5)
-				{
-					SDL_RenderDrawPoint(renderer, WINDOW_WIDTH / 2, y);
-				}
-			}
-			
-			// Draw the ball
-			ball.Draw(renderer);
-			paddleOne.Draw(renderer);
-			paddleTwo.Draw(renderer);
-			playerOneScoreText.Draw();
-			playerTwoScoreText.Draw();
+// Game Logic
+{
+    const float PADDLE_SPEED = 300.0f; // Increased speed significantly
+    
+    bool running = true;
+    bool buttons[4] = {};
+    float dt = 0.0f;
+    
+    while(running)
+    {
+        auto startTime = std::chrono::high_resolution_clock::now();
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            if(event.type == SDL_QUIT)
+            {
+                running = false;    
+            } 
+            else if (event.type == SDL_KEYDOWN)
+            {
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                {
+                    running = false;
+                }
+                // paddle movements logic
+                else if (event.key.keysym.sym == SDLK_w)
+                {
+                    buttons[Buttons::PaddleOneUp] = true;
+                }
+                else if (event.key.keysym.sym == SDLK_s)
+                {
+                    buttons[Buttons::PaddleOneDown] = true;
+                } 
+                else if (event.key.keysym.sym == SDLK_UP)
+                {
+                    buttons[Buttons::PaddleTwoUp] = true;
+                } 
+                else if (event.key.keysym.sym == SDLK_DOWN)
+                {
+                    buttons[Buttons::PaddleTwoDown] = true;
+                }
+            }
+            else if (event.type == SDL_KEYUP)
+            {
+                if (event.key.keysym.sym == SDLK_w)
+                {
+                    buttons[Buttons::PaddleOneUp] = false;
+                }
+                else if (event.key.keysym.sym == SDLK_s)
+                {
+                    buttons[Buttons::PaddleOneDown] = false;
+                }
+                else if (event.key.keysym.sym == SDLK_UP)
+                {
+                    buttons[Buttons::PaddleTwoUp] = false;
+                }
+                else if (event.key.keysym.sym == SDLK_DOWN)
+                {
+                    buttons[Buttons::PaddleTwoDown] = false;
+                }
+            }
+        }
 
-			// Present the backbuffer
-			SDL_RenderPresent(renderer);
-		}
-	}
+        if (buttons[Buttons::PaddleOneUp])
+        {
+            paddleOne.velocity.y = -PADDLE_SPEED;
+        }
+        else if (buttons[Buttons::PaddleOneDown])
+        {
+            paddleOne.velocity.y = PADDLE_SPEED;
+        } else
+        {
+            paddleOne.velocity.y = 0.0f;
+        }
+
+        if (buttons[Buttons::PaddleTwoUp])
+        {
+            paddleTwo.velocity.y = -PADDLE_SPEED;
+        }
+        else if (buttons[Buttons::PaddleTwoDown])
+        {
+            paddleTwo.velocity.y = PADDLE_SPEED;
+        }
+        else
+        {
+            paddleTwo.velocity.y = 0.0f;
+        }
+        
+        // Update ALL game objects
+        paddleOne.Update(dt);
+        paddleTwo.Update(dt);
+        //ball.Update(dt); // ADD THIS LINE - you were missing ball updates!
+
+        // Make the whole window black
+        SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, 0xFF);
+        SDL_RenderClear(renderer);
+    
+        // Rendering zone
+        // The main stage
+        SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF) ;
+        
+        for (int y = 0; y < WINDOW_HEIGHT; ++y)
+        {
+            if (y % 5)
+            {
+                SDL_RenderDrawPoint(renderer, WINDOW_WIDTH / 2, y);
+            }
+        }
+        
+        // Draw the ball
+        ball.Draw(renderer);
+        paddleOne.Draw(renderer);
+        paddleTwo.Draw(renderer);
+        playerOneScoreText.Draw();
+        playerTwoScoreText.Draw();
+
+        // Present the backbuffer
+        SDL_RenderPresent(renderer);
+
+        // Calculate frame time (convert to seconds)
+        auto stopTime = std::chrono::high_resolution_clock::now();
+        dt = std::chrono::duration<float>(stopTime - startTime).count();
+        
+        // Add a small delay to prevent excessive CPU usage
+        SDL_Delay(1);
+    }
+}	
 
 	// Cleanup
 	SDL_DestroyRenderer(renderer);
