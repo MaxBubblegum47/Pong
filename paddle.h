@@ -1,13 +1,13 @@
+#pragma once
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
+#include "util.h"
+#include "vector.h"  // Add this for Vec2
 
-// utilities
-SDL_Renderer* renderer;
-const int PADDLE_HEIGHT = 100;
-const int PADDLE_WIDTH = 25;
-const int WINDOW_WIDTH = 1280;
-const int WINDOW_HEIGHT = 720;
+// Remove this line - it's creating a global variable!
+// SDL_Renderer* renderer;
 
 class Paddle 
 {
@@ -22,7 +22,7 @@ class Paddle
 
         void Draw(SDL_Renderer* renderer)
         {
-            rect.x = static_cast<int>(position.x); // Update x position too
+            rect.x = static_cast<int>(position.x);
             rect.y = static_cast<int>(position.y);
 
             SDL_RenderFillRect(renderer, &rect);
@@ -30,7 +30,6 @@ class Paddle
 
         void Update(float dt)
         {
-            // FIXED: Use velocity instead of position!
             position += velocity * dt;
 
             // Boundary checking

@@ -7,6 +7,8 @@
 #include "ball.h"
 #include "paddle.h"
 #include "playerscore.h"
+#include "util.h"
+#include "collision.h"
 
 enum Buttons 
 {
@@ -25,9 +27,9 @@ int main()
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
 	// Create the ball
-	Ball ball(
-			Vec2((WINDOW_WIDTH / 2.0f) - (BALL_WIDTH / 2.0f),
-				(WINDOW_HEIGHT / 2.0f) - (BALL_WIDTH / 2.0f)));
+    Ball ball(
+        Vec2(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f),
+        Vec2(BALL_SPEED, 0.0f));
 
 	// Create the paddles
 	Paddle paddleOne(
@@ -51,9 +53,7 @@ int main()
 	// Replace your game logic section with this fixed version:
 
 // Game Logic
-{
-    const float PADDLE_SPEED = 300.0f; // Increased speed significantly
-    
+{    
     bool running = true;
     bool buttons[4] = {};
     float dt = 0.0f;
@@ -141,7 +141,21 @@ int main()
         // Update ALL game objects
         paddleOne.Update(dt);
         paddleTwo.Update(dt);
-        //ball.Update(dt); // ADD THIS LINE - you were missing ball updates!
+        ball.Update(dt);
+
+        // Cheks collisions
+        if (Contact contact = CheckPaddleCollision(ball, paddleOne); contact.type != CollisionType::None)
+        {
+            ball.CollideWithPaddle(contact);
+        }
+        else if (Contact contact = CheckPaddleCollision(ball, paddleTwo); contact.type != CollisionType::None)
+        {
+            ball.CollideWithPaddle(contact);
+        }
+        else if (Contact contact = CheckWallCollision(ball); contact.type != CollisionType::None)
+        {
+        	ball.CollideWithWall(contact);
+        }
 
         // Make the whole window black
         SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, 0xFF);

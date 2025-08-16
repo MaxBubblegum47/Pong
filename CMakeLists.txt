@@ -9,6 +9,6 @@ project(
 include_directories(/opt/homebrew/include/)
 link_directories(/opt/homebrew/lib)
 
-add_executable(pong main.cpp)
+add_executable(pong main.cpp util.cpp)
 
 target_link_libraries(pong SDL2 SDL2_ttf)
