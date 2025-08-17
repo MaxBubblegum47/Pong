@@ -51,7 +51,7 @@ class Ball
 		void CollideWithPaddle(Contact const& contact)
 		{
 			position.x += contact.penetration;
-			velocity.x -= velocity.x;
+			velocity.x = -velocity.x;
 
 			if (contact.type == CollisionType::Top)
 			{

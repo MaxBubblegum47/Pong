@@ -1,4 +1,4 @@
-#include "collision.h"
+#include "../include/collision.h"
 
 template<typename PaddleType>
 Contact CheckPaddleCollision(Ball const& ball, PaddleType const& paddle)

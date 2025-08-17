@@ -7,8 +7,9 @@ project(
     LANGUAGES CXX)
 
 include_directories(/opt/homebrew/include/)
+include_directories(include)
 link_directories(/opt/homebrew/lib)
 
-add_executable(pong main.cpp util.cpp)
+add_executable(pong src/main.cpp src/util.cpp)
 
 target_link_libraries(pong SDL2 SDL2_ttf)

@@ -3,12 +3,12 @@
 #include <SDL2/SDL_mixer.h>
 #include <string>
 #include <chrono>
-#include "vector.h"
-#include "ball.h"
-#include "paddle.h"
-#include "playerscore.h"
-#include "util.h"
-#include "collision.h"
+#include "../include/vector.h"
+#include "../include/ball.h"
+#include "../include/paddle.h"
+#include "../include/playerscore.h"
+#include "../include/util.h"
+#include "../include/collision.h"
 
 enum Buttons 
 {
@@ -41,7 +41,7 @@ int main()
 		Vec2(0.0f, 0.0f));
 
 	// If you don't see anything written on screen is because of the program is not finding the font!
-	TTF_Font* scoreFont = TTF_OpenFont("/Users/utente/Desktop/coding/Pong/build/dejavu-fonts-ttf-2.37/ttf/DejaVuSans.ttf", 40);
+	TTF_Font* scoreFont = TTF_OpenFont("../assets/fonts/dejavu-fonts-ttf-2.37/ttf/DejaVuSans.ttf", 40);
 	if (!scoreFont) {
     	printf("TTF_OpenFont failed: %s\n", TTF_GetError());
     	// Try a different font or handle the error

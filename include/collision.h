@@ -9,4 +9,4 @@ Contact CheckPaddleCollision(Ball const& ball, PaddleType const& paddle);
 template<typename BallType>
 Contact CheckWallCollision(BallType const& ball);
 
-#include "collision.tpp"
+#include "../src/collision.tpp"
