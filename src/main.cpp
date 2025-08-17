@@ -54,6 +54,7 @@ int main()
 
 // Game Logic
 {    
+    int playerOneScore, playerTwoScore = 0;
     bool running = true;
     bool buttons[4] = {};
     float dt = 0.0f;
@@ -155,6 +156,19 @@ int main()
         else if (Contact contact = CheckWallCollision(ball); contact.type != CollisionType::None)
         {
         	ball.CollideWithWall(contact);
+            if (contact.type == CollisionType::Left)
+            {
+                ++playerTwoScore;
+
+                playerTwoScoreText.SetScore(playerTwoScore);
+            }
+            else if (contact.type == CollisionType::Right)
+            {
+                ++playerOneScore;
+
+                playerOneScoreText.SetScore(playerOneScore);
+            }
+
         }
 
         // Make the whole window black

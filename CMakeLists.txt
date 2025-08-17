@@ -6,6 +6,9 @@ project(
     DESCRIPTION "Pong game made out of SDL, C++ and love"
     LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    
 include_directories(/opt/homebrew/include/)
 include_directories(include)
 link_directories(/opt/homebrew/lib)
