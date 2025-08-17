@@ -22,10 +22,16 @@ int main()
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	TTF_Init();
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 
 	SDL_Window* window = SDL_CreateWindow("Pong",0,0,WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
+
+    // Initialize sound effects
+    Mix_Chunk* wallHitSound = Mix_LoadWAV("../assets/sounds/WallHit.wav");
+    Mix_Chunk* paddleHitSound = Mix_LoadWAV("../assets/sounds/PaddleHit.wav");
+    
 	// Create the ball
     Ball ball(
         Vec2(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f),
@@ -54,7 +60,7 @@ int main()
 
 // Game Logic
 {    
-    int playerOneScore, playerTwoScore = 0;
+    int playerOneScore = 0, playerTwoScore = 0;
     bool running = true;
     bool buttons[4] = {};
     float dt = 0.0f;
@@ -148,10 +154,20 @@ int main()
         if (Contact contact = CheckPaddleCollision(ball, paddleOne); contact.type != CollisionType::None)
         {
             ball.CollideWithPaddle(contact);
+            
+            if (paddleHitSound) 
+            {
+                Mix_PlayChannel(-1, paddleHitSound, 0);
+            }
         }
         else if (Contact contact = CheckPaddleCollision(ball, paddleTwo); contact.type != CollisionType::None)
         {
             ball.CollideWithPaddle(contact);
+
+            if (paddleHitSound)
+            {
+                Mix_PlayChannel(-1, paddleHitSound, 0);
+            }
         }
         else if (Contact contact = CheckWallCollision(ball); contact.type != CollisionType::None)
         {
@@ -167,8 +183,14 @@ int main()
                 ++playerOneScore;
 
                 playerOneScoreText.SetScore(playerOneScore);
-            }
-
+            }	
+            else
+	        {
+                if (wallHitSound)
+                {
+                    Mix_PlayChannel(-1, wallHitSound, 0);
+                }
+	        }
         }
 
         // Make the whole window black
@@ -207,6 +229,9 @@ int main()
 }	
 
 	// Cleanup
+    if (wallHitSound) Mix_FreeChunk(wallHitSound);
+    if (paddleHitSound) Mix_FreeChunk(paddleHitSound);
+    Mix_CloseAudio();  // Add this
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	TTF_CloseFont(scoreFont);

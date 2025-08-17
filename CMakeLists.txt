@@ -15,4 +15,4 @@ link_directories(/opt/homebrew/lib)
 
 add_executable(pong src/main.cpp src/util.cpp)
 
-target_link_libraries(pong SDL2 SDL2_ttf)
+target_link_libraries(pong SDL2 SDL2_ttf SDL2_mixer)
